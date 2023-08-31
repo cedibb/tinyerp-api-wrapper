@@ -1,4 +1,18 @@
-import { AccountInfoResponse } from "./types/responses";
+import {
+  SearchContactsParameters,
+  GetContactParameters,
+  AddContactParameters,
+  UpdateContactParameters,
+} from "./types/parameters";
+
+import {
+  BaseApiResponse,
+  AccountInfoResponse,
+  SearchContactsResponse,
+  GetContactResponse,
+  AddContactResponse,
+  UpdateContactResponse,
+} from "./types/responses";
 
 export class TinyErpAPI {
   private baseUrl: string;
@@ -9,29 +23,50 @@ export class TinyErpAPI {
     this.token = token;
   }
 
-  private async makeRequest(endpoint: string, params?: Record<string, string>) {
+  private async makeRequest<T extends BaseApiResponse>(
+    endpoint: string,
+    params?: Record<string, any>
+  ): Promise<T> {
     const url = new URL(`${this.baseUrl}${endpoint}.php`);
     const defaultParams = { formato: "json", token: this.token };
     const searchParams = new URLSearchParams({ ...params, ...defaultParams });
     url.search = searchParams.toString();
+
     return fetch(url.toString())
       .then((res) => res.json())
       .then((json) => json.retorno);
   }
 
-  async getAccountInfo(): Promise<AccountInfoResponse> {
-    return this.makeRequest("/info");
+  async getAccountInfo() {
+    return this.makeRequest<AccountInfoResponse>("/info");
   }
 
-  async getNf(number: string) {
-    return this.makeRequest("/notas.fiscais.pesquisa", { numero: number });
+  async searchContacts(params: SearchContactsParameters) {
+    return this.makeRequest<SearchContactsResponse>(
+      "/contatos.pesquisa",
+      params
+    );
+  }
+
+  async getContact(params: GetContactParameters) {
+    return this.makeRequest<GetContactResponse>("/contato.obter", params);
+  }
+
+  async addContact(params: AddContactParameters) {
+    return this.makeRequest<AddContactResponse>("/contato.incluir", params);
+  }
+
+  async updateContact(params: UpdateContactParameters) {
+    return this.makeRequest<UpdateContactResponse>("/contato.alterar", params);
   }
 
   async getReceivables(name: string) {
-    return this.makeRequest("/contas.receber.pesquisa", { nome_cliente: name });
+    return this.makeRequest<BaseApiResponse>("/contas.receber.pesquisa", {
+      nome_cliente: name,
+    });
   }
 
   async getReceivable(id: string) {
-    return this.makeRequest("/conta.receber.obter", { id });
+    return this.makeRequest<BaseApiResponse>("/conta.receber.obter", { id });
   }
 }
