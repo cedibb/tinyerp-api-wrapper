@@ -3,16 +3,33 @@ import {
   GetContactParameters,
   AddContactParameters,
   UpdateContactParameters,
+  SearchInvoicesParameters,
+  GetInvoiceParameters,
+  AddInvoiceParameters,
+  GetReceivableParameters,
+  SearchReceivableParameters,
 } from "./types/parameters";
 
 import {
-  BaseApiResponse,
   AccountInfoResponse,
   SearchContactsResponse,
   GetContactResponse,
   AddContactResponse,
   UpdateContactResponse,
 } from "./types/responses";
+
+import { BaseResponse } from "./types/responses/BaseResponse.types";
+
+import {
+  SearchInvoicesResponseData,
+  GetInvoiceResponseData,
+  AddInvoiceResponseData,
+} from "./types/responses/InvoiceResponse.types";
+
+import {
+  GetReceivableResponseData,
+  SearchReceivableResponseData,
+} from "./types/responses/ReceivableResponse.types";
 
 export class TinyErpAPI {
   private baseUrl: string;
@@ -23,10 +40,7 @@ export class TinyErpAPI {
     this.token = token;
   }
 
-  private async makeRequest<T extends BaseApiResponse>(
-    endpoint: string,
-    params?: Record<string, any>
-  ): Promise<T> {
+  private async makeRequest<T>(endpoint: string, params?: Record<string, any>) {
     const url = new URL(`${this.baseUrl}${endpoint}.php`);
     const defaultParams = { formato: "json", token: this.token };
     const searchParams = new URLSearchParams({ ...params, ...defaultParams });
@@ -34,39 +48,94 @@ export class TinyErpAPI {
 
     return fetch(url.toString())
       .then((res) => res.json())
-      .then((json) => json.retorno);
+      .then((json: BaseResponse<T>) => json.retorno);
   }
 
-  async getAccountInfo() {
-    return this.makeRequest<AccountInfoResponse>("/info");
-  }
+  account = {
+    getInfo: () => this.makeRequest<AccountInfoResponse>("/info"),
+  };
 
-  async searchContacts(params: SearchContactsParameters) {
-    return this.makeRequest<SearchContactsResponse>(
-      "/contatos.pesquisa",
-      params
-    );
-  }
+  contact = {
+    search: (params: SearchContactsParameters) =>
+      this.makeRequest<SearchContactsResponse>("/contatos.pesquisa", params),
 
-  async getContact(params: GetContactParameters) {
-    return this.makeRequest<GetContactResponse>("/contato.obter", params);
-  }
+    get: (params: GetContactParameters) =>
+      this.makeRequest<GetContactResponse>("/contato.obter", params),
 
-  async addContact(params: AddContactParameters) {
-    return this.makeRequest<AddContactResponse>("/contato.incluir", params);
-  }
+    add: (params: AddContactParameters) =>
+      this.makeRequest<AddContactResponse>("/contato.incluir", params),
 
-  async updateContact(params: UpdateContactParameters) {
-    return this.makeRequest<UpdateContactResponse>("/contato.alterar", params);
-  }
+    udpdate: (params: UpdateContactParameters) =>
+      this.makeRequest<UpdateContactResponse>("/contato.alterar", params),
+  };
 
-  async getReceivables(name: string) {
-    return this.makeRequest<BaseApiResponse>("/contas.receber.pesquisa", {
-      nome_cliente: name,
-    });
-  }
+  receivable = {
+    search: (params: SearchReceivableParameters) =>
+      this.makeRequest<SearchReceivableResponseData>(
+        "/contas.receber.pesquisa",
+        params
+      ),
 
-  async getReceivable(id: string) {
-    return this.makeRequest<BaseApiResponse>("/conta.receber.obter", { id });
-  }
+    get: (params: GetReceivableParameters) =>
+      this.makeRequest<GetReceivableResponseData>(
+        "/conta.receber.obter",
+        params
+      ),
+  };
+
+  invoice = {
+    search: (params: SearchInvoicesParameters) =>
+      this.makeRequest<SearchInvoicesResponseData>(
+        "/notas.fiscais.pesquisa",
+        params
+      ),
+
+    get: (params: GetInvoiceParameters) =>
+      this.makeRequest<GetInvoiceResponseData>("/nota.fiscal.obter", params),
+
+    add: (params: AddInvoiceParameters) =>
+      this.makeRequest<AddInvoiceResponseData>("/nota.fiscal.incluir", params),
+  };
+
+  // async addMarkersToInvoice(params: AddMarkersToInvoiceParameters) {
+  //   return this.makeRequest<BaseApiResponse>(
+  //     "/nota.fiscal.marcador.incluir",
+  //     params
+  //   );
+  // }
+
+  // async removeMarkersFromInvoice(params: RemoveMarkersFromInvoiceParameters) {
+  //   return this.makeRequest<BaseApiResponse>(
+  //     "/nota.fiscal.marcador.excluir",
+  //     params
+  //   );
+  // }
+
+  // async addConsumerInvoice(params: AddConsumerInvoiceParameters) {
+  //   return this.makeRequest<BaseApiResponse>(
+  //     "/nota.fiscal.consumidor.incluir",
+  //     params
+  //   );
+  // }
+
+  // async addInvoiceViaXML(params: AddInvoiceViaXMLParameters) {
+  //   return this.makeRequest<BaseApiResponse>(
+  //     "/nota.fiscal.incluir.xml",
+  //     params
+  //   );
+  // }
+
+  // async getInvoiceXML(params: GetInvoiceXMLParameters) {
+  //   return this.makeRequest<GetInvoiceXMLResponse>(
+  //     "/nota.fiscal.obter.xml",
+  //     params
+  //   );
+  // }
+
+  // async getInvoiceLink(params: GetInvoiceLinkParameters) {
+  //   return this.makeRequest<GetInvoiceLinkResponse>(
+  //     "/nota.fiscal.obter.link",
+  //     params
+  //   );
+  // }
 }

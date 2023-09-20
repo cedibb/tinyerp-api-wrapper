@@ -1,35 +1,3 @@
-export interface BaseApiResponse {
-  retorno: {
-    status_processamento: number;
-    status: "OK" | "Erro";
-    codigo_erro?: number;
-    erros?: {
-      erro: string;
-    }[];
-  };
-}
-
-interface AccountInfo {
-  razao_social: string;
-  cnpj_cpf: string;
-  fantasia: string;
-  endereco: string;
-  numero: string;
-  bairro: string;
-  complemento: string;
-  cidade: string;
-  estado: string;
-  cep: string;
-  fone: string;
-  email: string;
-  inscricao_estadual: string;
-  regime_tributario: string;
-}
-
-export interface AccountInfoResponse extends BaseApiResponse {
-  conta?: AccountInfo;
-}
-
 interface Contact {
   id: number;
   codigo: string;
@@ -145,3 +113,58 @@ export interface Registers extends BaseApiResponse {
 export interface AddContactResponse extends Registers {}
 
 export interface UpdateContactResponse extends Registers {}
+
+export interface BaseApiResponse {
+  retorno: {
+    status_processamento: number;
+    status: "OK" | "Erro";
+    codigo_erro?: number;
+    erros?: {
+      erro: string;
+    }[];
+  };
+}
+
+export interface BaseApiResponse {
+  retorno: {
+    status_processamento: number;
+    status: "OK" | "Erro";
+    codigo_erro?: number;
+    erros?: {
+      erro: string;
+    }[];
+  };
+}
+
+interface AccountInfo {
+  razao_social: string;
+  cnpj_cpf: string;
+  fantasia: string;
+  endereco: string;
+  numero: string;
+  bairro: string;
+  complemento: string;
+  cidade: string;
+  estado: string;
+  cep: string;
+  fone: string;
+  email: string;
+  inscricao_estadual: string;
+  regime_tributario: string;
+}
+
+export interface AccountInfoResponseData extends BaseApiResponseData {
+  conta?: AccountInfo;
+}
+
+export interface AccountInfoResponse {
+  retorno: AccountInfoResponseData;
+}
+export interface BaseApiResponseData {
+  status_processamento: number;
+  status: "OK" | "Erro";
+  codigo_erro?: number;
+  erros?: {
+    erro: string;
+  }[];
+}
