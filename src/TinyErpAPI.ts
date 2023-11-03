@@ -97,6 +97,20 @@ export class TinyErpAPI {
       this.makeRequest<AddInvoiceResponseData>("/nota.fiscal.incluir", params),
   };
 
+  payable = {
+    search: (params: SearchInvoicesParameters) =>
+      this.makeRequest<SearchInvoicesResponseData>(
+        "/notas.fiscais.pesquisa",
+        params
+      ),
+
+    get: (params: GetInvoiceParameters) =>
+      this.makeRequest<GetInvoiceResponseData>("/nota.fiscal.obter", params),
+
+    add: (params: AddInvoiceParameters) =>
+      this.makeRequest<AddInvoiceResponseData>("/nota.fiscal.incluir", params),
+  };
+
   // async addMarkersToInvoice(params: AddMarkersToInvoiceParameters) {
   //   return this.makeRequest<BaseApiResponse>(
   //     "/nota.fiscal.marcador.incluir",
